@@ -833,7 +833,7 @@ shared_examples 'Customer Subscriptions' do
 
           expect {
             sub.save
-          }.to raise_error(Stripe::InvalidRequestError, "This customer has no attached payment source")
+          }.to raise_error(Stripe::InvalidRequestError, "This customer has no attached payment source or default payment method.")
         ensure
           customer.delete if customer
           paid_plan.delete if paid_plan
