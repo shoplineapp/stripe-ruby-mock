@@ -98,7 +98,7 @@ module StripeMock
           raise Stripe::InvalidRequestError.new(message, :interval)
         end
 
-        unless SUPPORTED_CURRENCIES.include?(params[:currency])
+        unless SUPPORTED_CURRENCIES.include?(params[:currency].downcase)
           message = invalid_currency_message(params[:currency])
           raise Stripe::InvalidRequestError.new(message, :currency)
         end
