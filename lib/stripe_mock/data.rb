@@ -1192,7 +1192,11 @@ module StripeMock
               funding: "credit",
               last4: "3155",
               three_d_secure_usage: { supported: true }
-          },
+          }.merge(
+            params.fetch(:card, {}).tap do |card|
+              card[:last4] = (card.delete(:number).to_s || '')[-4..-1]
+            end
+          ),
           customer: params[:customer] || nil,
           metadata: {
             order_id: "123456789"
