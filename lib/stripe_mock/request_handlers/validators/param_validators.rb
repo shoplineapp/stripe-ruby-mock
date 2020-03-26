@@ -88,7 +88,7 @@ module StripeMock
           raise Stripe::InvalidRequestError.new(message, :id)
         end
 
-        unless products[product_id]
+        if product_id.is_a?(String) && !products[product_id]
           message = not_found_message(Stripe::Product, product_id)
           raise Stripe::InvalidRequestError.new(message, :product)
         end
