@@ -104,10 +104,10 @@ module StripeMock
           customer[:default_source] = new_card[:id]
         end
 
-        allowed_params = %w(customer application_fee_percent coupon items metadata plan quantity source tax_percent trial_end trial_period_days current_period_start created prorate billing_cycle_anchor billing days_until_due idempotency_key enable_incomplete_payments cancel_at_period_end default_tax_rates payment_behavior pending_invoice_item_interval expand)
+        allowed_params = %w(customer application_fee_percent coupon items metadata plan quantity source tax_percent trial_end trial_period_days current_period_start created prorate billing_cycle_anchor billing days_until_due idempotency_key enable_incomplete_payments cancel_at_period_end default_tax_rates payment_behavior pending_invoice_item_interval expand discount)
         unknown_params = params.keys - allowed_params.map(&:to_sym)
         if unknown_params.length > 0
-          raise Stripe::InvalidRequestError.new("Received unknown parameter: #{unknown_params.join}", unknown_params.first.to_s, http_status: 400)
+          raise Stripe::InvalidRequestError.new("Received unknown parameter: #{unknown_params.join(', ')}", unknown_params.first.to_s, http_status: 400)
         end
 
         subscription = Data.mock_subscription({ id: (params[:id] || new_id('su')) })
@@ -166,6 +166,12 @@ module StripeMock
         subscription_id = $2 ? $2 : $1
         subscription = assert_existence :subscription, subscription_id, subscriptions[subscription_id]
         verify_active_status(subscription)
+
+        allowed_params = %w(cancel_at_period_end default_payment_method items metadata prorate proration_behavior application_fee_percent billing_cycle_anchor billing_thresholds cancel_at collection_method coupon days_until_due default_source default_tax_rates off_session pause_collection payment_behavior pending_invoice_item_interval proration_date tax_percent trial_end trial_from_plan expand plan quantity discount source)
+        unknown_params = params.keys - allowed_params.map(&:to_sym)
+        if unknown_params.length > 0
+          raise Stripe::InvalidRequestError.new("Received unknown parameter: #{unknown_params.join(', ')}", unknown_params.first.to_s, http_status: 400)
+        end
 
         customer_id = subscription[:customer]
         customer = assert_existence :customer, customer_id, customers[customer_id]
