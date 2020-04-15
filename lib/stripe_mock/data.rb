@@ -213,7 +213,29 @@ module StripeMock
         description: nil,
         dispute: nil,
         metadata: {
-        }
+        },
+        "payment_method": "pm_1GQPwwKjsM6nw9udGpvWEIRU",
+        "payment_method_details": {
+          "card": {
+            "brand": "visa",
+            "checks": {
+              "address_line1_check": nil,
+              "address_postal_code_check": nil,
+              "cvc_check": "pass"
+            },
+            "country": "US",
+            "exp_month": 3,
+            "exp_year": 2021,
+            "fingerprint": "Lfv27ggTyriGJPFZ",
+            "funding": "credit",
+            "installments": nil,
+            "last4": "4242",
+            "network": "visa",
+            "three_d_secure": nil,
+            "wallet": nil
+          },
+          "type": "card"
+        },
       }.merge(params)
     end
 
