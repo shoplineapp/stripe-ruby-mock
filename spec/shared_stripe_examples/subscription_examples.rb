@@ -833,7 +833,7 @@ shared_examples 'Customer Subscriptions' do
 
           expect {
             sub.save
-          }.to raise_error(Stripe::InvalidRequestError, "This customer has no attached payment source")
+          }.to raise_error(Stripe::InvalidRequestError, "This customer has no attached payment source or default payment method.")
         ensure
           customer.delete if customer
           paid_plan.delete if paid_plan
@@ -1083,7 +1083,7 @@ shared_examples 'Customer Subscriptions' do
       expect(subscription.items.object).to eq('list')
       expect(subscription.items.data.class).to eq(Array)
       expect(subscription.items.data.count).to eq(1)
-      expect(subscription.items.data.first.id).to eq('test_txn_default')
+      expect(subscription.items.data.first.id).to start_with('test_si_')
       expect(subscription.items.data.first.created).to eq(1504716183)
       expect(subscription.items.data.first.object).to eq('subscription_item')
       expect(subscription.items.data.first.plan.amount).to eq(0)

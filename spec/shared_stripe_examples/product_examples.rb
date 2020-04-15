@@ -110,15 +110,16 @@ shared_examples "Product API" do
     end
 
     describe "Uniqueness" do
-      let(:already_exists_message){ stripe_validator.already_exists_message(Stripe::Product) }
-
       it "validates uniqueness of identifier" do
         stripe_helper.delete_product(params[:id])
 
         Stripe::Product.create(params)
         expect {
           Stripe::Product.create(params)
-        }.to raise_error(Stripe::InvalidRequestError, already_exists_message)
+        }.to raise_error do |e|
+          expect(e).to be_a Stripe::InvalidRequestError
+          expect(e.message).to include('already exists')
+        end
       end
     end
   end

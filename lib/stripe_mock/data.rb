@@ -119,7 +119,6 @@ module StripeMock
 
     def self.mock_customer(sources, params)
       cus_id = params[:id] || "test_cus_default"
-      currency = params[:currency] || StripeMock.default_currency
       sources.each {|source| source[:customer] = cus_id}
       {
         email: 'stripe_mock@example.com',
@@ -133,7 +132,7 @@ module StripeMock
         delinquent: false,
         discount: nil,
         account_balance: 0,
-        currency: currency,
+        currency: nil,
         invoice_settings: {
           default_payment_method: nil,
           custom_fields: nil,
@@ -214,7 +213,29 @@ module StripeMock
         description: nil,
         dispute: nil,
         metadata: {
-        }
+        },
+        "payment_method": "pm_1GQPwwKjsM6nw9udGpvWEIRU",
+        "payment_method_details": {
+          "card": {
+            "brand": "visa",
+            "checks": {
+              "address_line1_check": nil,
+              "address_postal_code_check": nil,
+              "cvc_check": "pass"
+            },
+            "country": "US",
+            "exp_month": 3,
+            "exp_year": 2021,
+            "fingerprint": "Lfv27ggTyriGJPFZ",
+            "funding": "credit",
+            "installments": nil,
+            "last4": "4242",
+            "network": "visa",
+            "three_d_secure": nil,
+            "wallet": nil
+          },
+          "type": "card"
+        },
       }.merge(params)
     end
 
@@ -339,6 +360,7 @@ module StripeMock
         },
         cancel_at_period_end: false,
         canceled_at: nil,
+        cancel_at: nil,
         ended_at: nil,
         start: 1308595038,
         object: 'subscription',
@@ -1193,7 +1215,11 @@ module StripeMock
               funding: "credit",
               last4: "3155",
               three_d_secure_usage: { supported: true }
-          },
+          }.merge(
+            params.fetch(:card, {}).tap do |card|
+              card[:last4] = (card.delete(:number).to_s || '')[-4..-1]
+            end
+          ),
           customer: params[:customer] || nil,
           metadata: {
             order_id: "123456789"

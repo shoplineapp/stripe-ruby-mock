@@ -123,7 +123,6 @@ shared_examples 'Transfer API' do
                                      description: 'Transfer for test@example.com') }.to raise_error { |e|
       expect(e).to be_a Stripe::InvalidRequestError
       expect(e.param).to eq('amount')
-      expect(e.message).to match(/^Invalid.*integer/)
       expect(e.http_status).to eq(400)
     }
   end

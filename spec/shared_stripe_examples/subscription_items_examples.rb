@@ -63,7 +63,8 @@ shared_examples 'Subscription Items API' do
     it 'retrieves all subscription items' do
       all = Stripe::SubscriptionItem.list(subscription: subscription.id)
 
-      expect(all.count).to eq(2)
+      # 1 from subscription creation, 2 from item creation
+      expect(all.count).to eq(3)
     end
     it 'when no subscription param' do
       expect { Stripe::SubscriptionItem.list }.to raise_error { |e|

@@ -29,7 +29,7 @@ module StripeMock
           raise Stripe::InvalidRequestError.new(missing_param_message(k), k) if params[k].nil?
         end
 
-        if !%w[good service].include?(params[:type])
+        if !['good', 'service', nil].include?(params[:type])
           raise Stripe::InvalidRequestError.new("Invalid type: must be one of good or service", :type)
         end
 
@@ -49,7 +49,7 @@ module StripeMock
       SUPPORTED_PLAN_INTERVALS = ["month", "year", "week", "day"]
 
       def invalid_plan_interval_message
-        "Invalid interval: must be one of day, month, week, or year"
+        "Invalid interval: must be one of month, year, week, or day"
       end
 
       SUPPORTED_CURRENCIES = [
@@ -88,7 +88,7 @@ module StripeMock
           raise Stripe::InvalidRequestError.new(message, :id)
         end
 
-        unless products[product_id]
+        if product_id.is_a?(String) && !products[product_id]
           message = not_found_message(Stripe::Product, product_id)
           raise Stripe::InvalidRequestError.new(message, :product)
         end
@@ -98,7 +98,7 @@ module StripeMock
           raise Stripe::InvalidRequestError.new(message, :interval)
         end
 
-        unless SUPPORTED_CURRENCIES.include?(params[:currency])
+        unless SUPPORTED_CURRENCIES.include?(params[:currency].downcase)
           message = invalid_currency_message(params[:currency])
           raise Stripe::InvalidRequestError.new(message, :currency)
         end

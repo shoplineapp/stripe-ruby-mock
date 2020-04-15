@@ -53,18 +53,20 @@ describe StripeMock::Instance do
     expect(StripeMock.instance.conversion_rate).to eq(1.25)
   end
 
-  it "allows non-usd default currency" do
-    old_default_currency = StripeMock.default_currency
-    customer = begin
-      StripeMock.default_currency = "jpy"
-      Stripe::Customer.create({
-        email: 'johnny@appleseed.com',
-        source: stripe_helper.generate_card_token
-      })
-    ensure
-      StripeMock.default_currency = old_default_currency
+  skip "in live environment, stripe customer currency is nil if not given" do
+    it "allows non-usd default currency" do
+      old_default_currency = StripeMock.default_currency
+      customer = begin
+        StripeMock.default_currency = "jpy"
+        Stripe::Customer.create({
+          email: 'johnny@appleseed.com',
+          source: stripe_helper.generate_card_token
+        })
+      ensure
+        StripeMock.default_currency = old_default_currency
+      end
+      expect(customer.currency).to eq("jpy")
     end
-    expect(customer.currency).to eq("jpy")
   end
 
   context 'when creating sources with metadata' do

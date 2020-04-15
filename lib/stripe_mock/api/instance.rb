@@ -18,6 +18,11 @@ module StripeMock
     @state = 'ready'
   end
 
+  def self.restart
+    self.stop
+    self.start
+  end
+
   # Yield the given block between StripeMock.start and StripeMock.stop
   def self.mock(&block)
     begin

@@ -191,15 +191,16 @@ shared_examples 'Plan API' do
     end
 
     describe "Uniqueness" do
-      let(:already_exists_message) { stripe_validator.already_exists_message(Stripe::Plan) }
-
       it "validates for uniqueness" do
         stripe_helper.delete_plan(params[:id])
 
         Stripe::Plan.create(params)
         expect {
           Stripe::Plan.create(params)
-        }.to raise_error(Stripe::InvalidRequestError, already_exists_message)
+        }.to raise_error do |e|
+          expect(e).to be_a Stripe::InvalidRequestError
+          expect(e.message).to include('already exists')
+        end
       end
     end
 

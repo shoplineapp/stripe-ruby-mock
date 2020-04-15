@@ -8,16 +8,15 @@ module StripeMock
 
       def resolve_subscription_changes(subscription, plans, customer, options = {})
         subscription.merge!(custom_subscription_params(plans, customer, options))
-        items = options[:items]
+        items = options[:items] || []
         items = items.values if items.respond_to?(:values)
         subscription[:items][:data] = plans.map do |plan|
-          if items && items.size == plans.size
-            quantity = items &&
-              items.detect { |item| item[:plan] == plan[:id] }[:quantity] || 1
-            Data.mock_subscription_item({ plan: plan, quantity: quantity })
-          else
-            Data.mock_subscription_item({ plan: plan })
-          end
+          item_params = (items.detect { |item| item[:plan] == plan[:id] } || {}).merge(
+            plan: plan,
+            id: new_id('si')
+          )
+
+          subscriptions_items[item_params[:id]] = Data.mock_subscription_item item_params
         end
         subscription
       end
@@ -32,7 +31,7 @@ module StripeMock
         start_time = options[:current_period_start] || now
         params = { customer: cus[:id], current_period_start: start_time, created: created_time }
         params.merge!({ :plan => (plans.size == 1 ? plans.first : nil) })
-        keys_to_merge = /application_fee_percent|quantity|metadata|tax_percent|billing|days_until_due|default_tax_rates|pending_invoice_item_interval/
+        keys_to_merge = /application_fee_percent|quantity|metadata|tax_percent|billing|days_until_due|default_tax_rates|pending_invoice_item_interval|cancel_at/
         params.merge! options.select {|k,v| k =~ keys_to_merge}
 
         if options[:cancel_at_period_end] == true
